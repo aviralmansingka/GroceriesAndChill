@@ -7,6 +7,8 @@ import pandas as pd
 import numpy as np
 from scipy import spatial
 
+import csv
+
 app = Flask(__name__)
 
 @app.route('/', methods=['GET'])
@@ -67,16 +69,16 @@ def build_reply(intent):
     return generate_reply_from_list(items_to_buy)
 
 
-def binSearch(str, read_data):
-    str = str.upper();
+def binSearch(string, read_data):
+    string = string.upper();
     start = 1
     end = len(read_data) - 1
     while(start <= end):
         mid = (start + end)/2
-        mid_element = read_data[mid][5];
-        if(str == mid_element):
+        mid_element = read_data[int(mid)][5];
+        if(string == mid_element):
             return read_data[mid][4]
-        elif(str < mid_element):
+        elif(string < mid_element):
             end = mid - 1
         else:
             start = mid + 1
@@ -85,7 +87,7 @@ def binSearch(str, read_data):
 
 def read():
     csv_file = "categories.csv"
-    lines = csv.reader(open(csv_file,"rb"))
+    lines = csv.reader(open(csv_file,"rt"))
 
     read_data = list(lines)
     return read_data
@@ -99,19 +101,12 @@ def parse_list(item_list):
 
     dataset = read()
     for i in range(len(item_list)):
-        sub_category = binSearch(item_list,dataset)
+        sub_category = binSearch(item_list[i],dataset)
         if dictionary.has_key(sub_category):
             shopping_list[dictionary[sub_category] - 1] += 1
         else:
             shopping_list[0] += 1
 
-    
-'''
-    shopping_list[7] = 3
-    shopping_list[14] = 4
-    shopping_list[22] = 4
-    shopping_list[28] = 5
-'''
     return shopping_list
 
 def prepare_data():
